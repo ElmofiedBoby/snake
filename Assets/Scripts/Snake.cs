@@ -6,7 +6,7 @@ public class Snake : MonoBehaviour
 {
     // Direction of Snake
     private Vector2 _direction = Vector2.right;
-    public float time = 0.1f;
+    public float speed = 1f;
 
     private List<Transform> _segments;
     public Transform segmentPrefab;
@@ -14,6 +14,7 @@ public class Snake : MonoBehaviour
     private void Start() {
         _segments = new List<Transform>();
         _segments.Add(this.transform);
+        InvokeRepeating("Move", speed, speed);  
     }
     private void Update() {
         if(Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow)) {
@@ -30,14 +31,14 @@ public class Snake : MonoBehaviour
         }
     }
 
-    private void FixedUpdate() {
+    private void Move() {
         for(int i = _segments.Count - 1; i > 0; i--) {
             _segments[i].position = _segments[i-1].position;
         }
 
         this.transform.position = new Vector3(
-            Mathf.Round(this.transform.position.x*time) + _direction.x,
-            Mathf.Round(this.transform.position.y*time) + _direction.y,
+            Mathf.Round(this.transform.position.x) + _direction.x,
+            Mathf.Round(this.transform.position.y) + _direction.y,
             0.0f
         );
     }
