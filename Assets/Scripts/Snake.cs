@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Snake : MonoBehaviour
 {
@@ -10,6 +11,7 @@ public class Snake : MonoBehaviour
 
     private List<Transform> _segments;
     public Transform segmentPrefab;
+    public Transform theSnake;
 
     private void Start() {
         _segments = new List<Transform>();
@@ -45,7 +47,25 @@ public class Snake : MonoBehaviour
 
     private void Grow() {
         Transform segment = Instantiate(this.segmentPrefab);
-        segment.position = _segments[_segments.Count - 1].position;
+        if(_segments.Count != 1) {
+            segment.position = _segments[_segments.Count-1].position;
+        }
+        else {
+            if(_segments[_segments.Count-1].position.y > theSnake.position.y) {
+                segment.position = _segments[_segments.Count-1].position + new Vector3(1, 0, 0);
+            }
+            else if(_segments[_segments.Count-1].position.y < theSnake.position.y) {
+                segment.position = _segments[_segments.Count-1].position + new Vector3(-1, 0, 0);
+            }
+            else if(_segments[_segments.Count-1].position.x > theSnake.position.x) {
+                segment.position = _segments[_segments.Count-1].position + new Vector3(0, 1, 0);
+            }
+            else if(_segments[_segments.Count-1].position.x < theSnake.position.x) {
+                segment.position = _segments[_segments.Count-1].position + new Vector3(0, -1, 0);
+            }
+            
+        }
+        
 
         _segments.Add(segment);
     }
@@ -59,13 +79,20 @@ public class Snake : MonoBehaviour
         _segments.Add(this.transform);
 
         this.transform.position = Vector3.zero;
+
+        SceneManager.LoadScene("DeathMenu");
     }
+
     private void OnTriggerEnter2D(Collider2D other) {
         if(other.tag == "Food") {
             Grow();
         }
 
         if(other.tag == "Obstacle") {
+            ResetState();
+        }
+
+        if(other.tag == "Player") {
             ResetState();
         }
     }
